@@ -1,90 +1,49 @@
-import React, { useState, useCallback } from 'react';
-import { PoemEntry, PoetryCategory } from './types';
-import { generateDirectory } from './services/geminiService';
-import { PoemCard } from './components/PoemCard'; // Displays the list
-import { Controls } from './components/Controls';
-
-// Initial example data (Five-character Quatrains)
-const INITIAL_DIRECTORY: PoemEntry[] = [
-  { title: "静夜思", author: "李白", snippet: "床前明月光，疑是地上霜" },
-  { title: "春晓", author: "孟浩然", snippet: "春眠不觉晓，处处闻啼鸟" },
-  { title: "登鹳雀楼", author: "王之涣", snippet: "白日依山尽，黄河入海流" },
-  { title: "相思", author: "王维", snippet: "红豆生南国，春来发几枝" },
-  { title: "江雪", author: "柳宗元", snippet: "千山鸟飞绝，万径人踪灭" }
-];
-
-const App: React.FC = () => {
-  const [directory, setDirectory] = useState<PoemEntry[]>(INITIAL_DIRECTORY);
-  const [category, setCategory] = useState<PoetryCategory>(PoetryCategory.FIVE_CHAR_QUATRAIN);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleGenerate = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const newDirectory = await generateDirectory(category);
-      setDirectory(newDirectory);
-    } catch (err) {
-      setError("无法获取目录，请稍后重试。(Unable to fetch directory)");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [category]);
-
-  return (
-    <div className="min-h-screen bg-[#f5f5f4] text-[#2d2a26] font-serif">
-      {/* Background Texture */}
-      <div className="fixed inset-0 z-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/rice-paper-2.png')]"></div>
-      
-      <main className="relative z-10 container mx-auto px-4 py-12 md:py-16 min-h-screen flex flex-col items-center">
-        
-        {/* Header with Red Seal style */}
-        <header className="mb-12 text-center relative">
-          <div className="flex flex-col items-center">
-             <div className="w-16 h-16 border-4 border-seal rounded-md flex items-center justify-center mb-6 opacity-80">
-                <span className="text-seal font-bold text-3xl writing-vertical-rl">唐诗</span>
-             </div>
-             <h1 className="text-4xl md:text-5xl font-bold text-ink mb-2 tracking-widest">
-                唐诗三百首
-             </h1>
-             <p className="text-stone-500 font-serif italic text-lg">
-                Three Hundred Tang Poems Directory
-             </p>
-          </div>
-        </header>
-
-        {/* Content Area */}
-        <div className="w-full max-w-4xl flex flex-col gap-10">
-          
-          <Controls 
-            currentCategory={category} 
-            onCategoryChange={setCategory} 
-            onGenerate={handleGenerate}
-            isLoading={isLoading}
-          />
-
-          <div className="relative">
-            {error && (
-              <div className="absolute -top-16 left-0 right-0 mx-auto w-full max-w-md bg-red-50 text-red-700 px-4 py-3 rounded-md border border-red-200 text-center text-sm shadow-sm animate-fade-in font-sans">
-                {error}
-              </div>
-            )}
-            <PoemCard entries={directory} isLoading={isLoading} />
-          </div>
-
-        </div>
-
-        {/* Footer */}
-        <footer className="mt-20 text-center text-stone-400 text-sm font-sans">
-          <p className="mb-2">Powered by Google Gemini</p>
-          <p>&copy; {new Date().getFullYear()} Classic Poetry Explorer</p>
-        </footer>
-
-      </main>
-    </div>
-  );
-};
-
-export default App;
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>唐诗三百首目录 - Tang Poetry Directory</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;700&family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              serif: ['"Noto Serif SC"', '"Cormorant Garamond"', 'serif'],
+              display: ['"Noto Serif SC"', 'serif'],
+              sans: ['"Lato"', 'sans-serif'],
+            },
+            colors: {
+              paper: '#fdfbf7',
+              ink: '#2d2a26',
+              'ink-light': '#5a5550',
+              seal: '#b91c1c',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        background-color: #f5f5f4;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
+    "react/": "https://esm.sh/react@^19.2.1/",
+    "react": "https://esm.sh/react@^19.2.1",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.1/"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
